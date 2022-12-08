@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useDeleteContactMutation } from '../../services/contacts';
+import { useDeleteContactMutation } from '../../redux/services/contacts';
 import ContactListItem from '../ContactListItem';
 
 export default function ContactList({ error, isLoading, data, filter }) {
