@@ -1,19 +1,43 @@
-import { getFilter, getContacts } from 'redux/contactsSlice';
-import { useSelector } from 'react-redux';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+import { useDeleteContactMutation } from '../../services/contacts';
 import ContactListItem from '../ContactListItem';
 
-export default function ContactList() {
-  const filter = useSelector(getFilter);
-  const contacts = useSelector(getContacts);
+export default function ContactList({ error, isLoading, data, filter }) {
+  const [deleteContact, { isLoading: isDeleting }] = useDeleteContactMutation();
+  const [contacts, setContats] = useState(null);
 
-  const filterContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  useEffect(() => {
+    if (data) {
+      setContats(data);
+    }
+  }, [contacts, data]);
+
+  const filterContacts = () => {
+    if (contacts) {
+      return contacts.filter(contact =>
+        contact.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
+  };
   return (
     <ul>
-      {filterContacts.map(({ id, name, number }) => (
-        <ContactListItem key={id} id={id} name={name} number={number} />
-      ))}
+      {error ? (
+        <>Here will be contacts</>
+      ) : isLoading ? (
+        <>Loading...</>
+      ) : filterContacts() ? (
+        filterContacts().map(({ id, name, phone }) => (
+          <ContactListItem
+            key={id}
+            onDelete={deleteContact}
+            name={name}
+            number={phone}
+            deleting={isDeleting}
+            id={id}
+          />
+        ))
+      ) : null}
     </ul>
   );
 }
